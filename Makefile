@@ -79,7 +79,7 @@ DOCKERIZE =
 
 IMPLS = ada awk bash basic c d chuck clojure coffee common-lisp cpp crystal cs dart \
 	erlang elisp elixir es6 factor forth fsharp go groovy guile haskell \
-	haxe io java julia js kotlin logo lua make mal ocaml matlab miniMAL \
+	haxe io java julia js kotlin logo lua make mal ocaml oli oli-clj matlab miniMAL \
 	nim objc objpascal perl perl6 php pil plpgsql plsql powershell ps \
 	python r racket rpython ruby rust scala skew swift swift3 tcl ts vb vhdl \
 	vimscript
@@ -140,6 +140,8 @@ haxe_STEP_TO_PROG_js     = haxe/$($(1)).js
 
 clojure_STEP_TO_PROG_clj  = clojure/target/$($(1)).jar
 clojure_STEP_TO_PROG_cljs = clojure/src/mal/$($(1)).cljc
+oli-clj_STEP_TO_PROG_clj  = oli-clj/target/$($(1)).jar
+oli-clj_STEP_TO_PROG_cljs = oli-clj/src/mal/$($(1)).cljc
 
 opt_DEFERRABLE      = $(if $(strip $(DEFERRABLE)),$(if $(filter t true T True TRUE 1 y yes Yes YES,$(DEFERRABLE)),--deferrable,--no-deferrable),--no-deferrable)
 opt_OPTIONAL        = $(if $(strip $(OPTIONAL)),$(if $(filter t true T True TRUE 1 y yes Yes YES,$(OPTIONAL)),--optional,--no-optional),--no-optional)
@@ -160,6 +162,7 @@ c_STEP_TO_PROG =       c/$($(1))
 d_STEP_TO_PROG =       d/$($(1))
 chuck_STEP_TO_PROG =   chuck/$($(1)).ck
 clojure_STEP_TO_PROG = $(clojure_STEP_TO_PROG_$(CLJ_MODE))
+oli-clj_STEP_TO_PROG = $(oli-clj_STEP_TO_PROG_$(CLJ_MODE))
 coffee_STEP_TO_PROG =  coffee/$($(1)).coffee
 common-lisp_STEP_TO_PROG =  common-lisp/$($(1))
 cpp_STEP_TO_PROG =     cpp/$($(1))
@@ -186,6 +189,7 @@ lua_STEP_TO_PROG =     lua/$($(1)).lua
 make_STEP_TO_PROG =    make/$($(1)).mk
 mal_STEP_TO_PROG =     mal/$($(1)).mal
 ocaml_STEP_TO_PROG =   ocaml/$($(1))
+oli_STEP_TO_PROG =     oli/$($(1)).lua
 matlab_STEP_TO_PROG =  matlab/$($(1)).m
 miniMAL_STEP_TO_PROG = miniMAL/$($(1)).json
 nim_STEP_TO_PROG =     nim/$($(1))
