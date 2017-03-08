@@ -1,5 +1,5 @@
 (ns oli-clj.reader
-  (:require [clojure.string :as str]))
+  (:require [oli-clj.util :as util]))
 
 (def regexp #"[\s,]*(~@|[\[\]{}()'`~^@]|\"(?:\\.|[^\\\"])*\"|;.*|[^\s\[\]{}('\"`,;)]*)")
 
@@ -8,60 +8,29 @@
                  (filter #(not (empty? %))))
         (re-seq regexp str)))
 
-(defn read-form
+(declare read-form)
+
+(defn read-list
   ([tokens]
-    (read-form [] tokens))
-  ([ast [t & ts]]
-    (case t
-      ;; Bug here. If unmatched paren exists in string, (read-form ts) will exit with the nil t case,
-      ;; and only return ast. So when we destructure into [new-ast new-ts] it is actually destructuring on just the values in ast.
-      "(" (let [[new-ast new-ts] (read-form ts)]
-            (recur (conj ast new-ast) new-ts))
-      ")" [ast ts]
-      nil ast
-      (recur (conj ast (str t)) ts))))
+   (read-list [] tokens))
+  ([ast [t & ts :as tokens]]
+   (case t
+     ")" [ast ts]
+     (let [[_ast _ts] (read-form tokens)]
+       (recur (conj ast _ast) _ts)))))
+
+(defn read-atom [[t & ts]]
+  [(util/parse t) (vec ts)])
+
+(defn read-form [[t & ts :as tokens]]
+  (case t
+    nil (throw (Exception. "Mismatched parens"))
+    "(" (read-list ts)
+    (read-atom tokens)))
 
 (defn read-expr [str]
-  (read-form (tokenizer str)))
-
-
-;; "(+ 1 2 3)"
-
-;; (read-form ["(" "+" "1" "2" ")"])
-;; (read-form [] ["(" "+" "1" "2" ")"])
-
-
-;;   (read-form ["+" "1" "2" ")"])
-;;   (read-form [] ["+" "1" "2" ")"])
-;;     (read-form ["+"] ["1" "2" ")"])
-;;       (read-form ["+" "1"] ["2" ")"])
-;;         (read-form ["+" "1" "2"] [")"])
-;;           (read-form ["+" "1" "2"] nil)
-;;             ["+" "1" "2"]
-
-;; [( + 1 2 3 )] -> [] [( + 1 2 3 )] :18
-;; [+ 1 2 3 )] -> [] [+ 1 2 3 )] :23
-;;   [+] [1 2 3 )] :26
-;;   [+ 1] [2 3 )] :26
-;;   [+ 1 2] [3 )] :26
-;;   [+ 1 2 3] [)] :26
-;;   [+ 1 2 3] [] :21
-;;   return [+ 1 2 3]
-;; [[+ 1 2 3]] nil :24
-;; [[+ 1 2 3]]
-
-;; "(+ 1 (+ 2 3))"
-;; [( + 1 ( + 2 3 ) )] -> [] [( + 1 ( + 2 3 ) )] :18
-;; [+ 1 ( + 2 3 ) )] -> [] [+ 1 ( + 2 3 ) )] :23
-;;   [+] [1 ( + 2 3 ) )] :26
-;;   [+ 1] [( + 2 3 ) )] :26
-;;   [+ 2 3 ) )] -> [] [+ 2 3 ) )] :23
-;;     [+] [2 3 ) )] :26
-;;     [+ 2] [3 ) )] :26
-;;     [+ 2 3] [) )] :26
-;;     [+ 2 3] [)]   :25
-;;     [+ 2 3] nil   :21
-;;     [+ 2 3] return
-;;   [+ 1 [+ 2 3]] nil :24
-;;   [+ 1 [+ 2 3]] return
-;; [+ 1 [+ 2 3]] return
+  (loop [expr [] tokens (tokenizer str)]
+    (if (empty? tokens)
+      expr
+      (let [[_expr tokens] (read-form tokens)]
+        (recur (conj expr _expr) tokens)))))
