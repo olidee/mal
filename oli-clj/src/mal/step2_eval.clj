@@ -1,8 +1,8 @@
-(ns oli-clj.step2-eval
-  (:require [oli-clj.reader :as reader]
-            [oli-clj.eval :as eval]
-            [oli-clj.printer :as printer]
-            [oli-clj.util :as util]))
+(ns mal.step2-eval
+  (:require [mal.reader :as reader]
+            [mal.eval :as eval]
+            [mal.printer :as printer]
+            [mal.util :as util]))
 
 (def env {"+" (fn [x y] (+ x y))
           "-" (fn [x y] (- x y))

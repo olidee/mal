@@ -1,6 +1,6 @@
-(ns oli-clj.step1-read-print
-  (:require [oli-clj.reader :as reader]
-            [oli-clj.printer :as printer]))
+(ns mal.step1-read-print
+  (:require [mal.reader :as reader]
+            [mal.printer :as printer]))
 
 (defn READ [str]
   (reader/read-expr str))

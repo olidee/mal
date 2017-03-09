@@ -1,4 +1,4 @@
-(ns oli-clj.util)
+(ns mal.util)
 
 (defn try-and [f msg & args]
   (try

@@ -1,4 +1,4 @@
-(ns oli-clj.eval)
+(ns mal.eval)
 
 (declare eval-expr)
 

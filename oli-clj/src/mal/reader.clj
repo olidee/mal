@@ -1,5 +1,5 @@
-(ns oli-clj.reader
-  (:require [oli-clj.util :as util]))
+(ns mal.reader
+  (:require [mal.util :as util]))
 
 (def regexp #"[\s,]*(~@|[\[\]{}()'`~^@]|\"(?:\\.|[^\\\"])*\"|;.*|[^\s\[\]{}('\"`,;)]*)")
 
