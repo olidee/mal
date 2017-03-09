@@ -1,8 +1,7 @@
 CLJ_MODE ?= clj
-SOURCES_UTIL = src/mal/readline.$(CLJ_MODE)
-SOURCES_BASE = $(SOURCES_UTIL) src/mal/printer.clj
-SOURCES_LISP = src/mal/env.clj src/mal/core.clj src/mal/stepA_mal.clj
-SRCS = $(SOURCES_BASE) src/mal/env.clj src/mal/core.clj
+SOURCES_BASE = src/mal/reader.clj src/mal/util.clj src/mal/printer.clj src/mal/eval.clj
+SOURCES_LISP = src/mal/stepA_mal.clj
+SRCS = $(SOURCES_BASE)
 SOURCES = $(SOURCES_BASE) $(SOURCES_LISP)
 
 all: $(if $(filter cljs,$(CLJ_MODE)),node_modules,deps)
