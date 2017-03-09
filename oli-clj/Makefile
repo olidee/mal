@@ -1,8 +1,8 @@
 CLJ_MODE ?= clj
 SOURCES_UTIL = src/mal/readline.$(CLJ_MODE)
-SOURCES_BASE = $(SOURCES_UTIL) src/mal/printer.cljc
-SOURCES_LISP = src/mal/env.cljc src/mal/core.cljc src/mal/stepA_mal.cljc
-SRCS = $(SOURCES_BASE) src/mal/env.cljc src/mal/core.cljc
+SOURCES_BASE = $(SOURCES_UTIL) src/mal/printer.clj
+SOURCES_LISP = src/mal/env.clj src/mal/core.clj src/mal/stepA_mal.clj
+SRCS = $(SOURCES_BASE) src/mal/env.clj src/mal/core.clj
 SOURCES = $(SOURCES_BASE) $(SOURCES_LISP)
 
 all: $(if $(filter cljs,$(CLJ_MODE)),node_modules,deps)
@@ -21,7 +21,7 @@ mal: mal.jar
 	cat <(echo -e '#!/bin/sh\nexec java -jar "$$0" "$$@"') mal.jar > $@
 	chmod +x mal
 
-target/%.jar: src/mal/%.cljc $(SRCS)
+target/%.jar: src/mal/%.clj $(SRCS)
 	lein with-profile $(word 1,$(subst _, ,$*)) uberjar
 
 node_modules:
