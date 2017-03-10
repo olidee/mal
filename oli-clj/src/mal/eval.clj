@@ -12,17 +12,17 @@
     (vector? n) (map #(eval-expr % env) n)
     :else n))
 
-(defn- maldef! [name value env]
+(defn- maldef! [[name value] env]
   (mal.env/set-in-env env name (eval-expr value env)))
 
-(defn- mallet* [bindings expr env]
+(defn- mallet* [[bindings expr] env]
   (let [bindings (apply hash-map bindings)
         new-env (mal.env/create-env env)]
     (doseq [[k v] bindings]
       (mal.env/set-in-env new-env k (eval-expr v new-env)))
     (eval-expr expr new-env)))
 
-(defn- malfn* [params body env]
+(defn- malfn* [[params body] env]
   (if (vector? params)
     (fn [& args]
       (if (= (count params) (count args))
@@ -31,7 +31,7 @@
         (throw (Exception. "Wrong number of args passed to fn"))))
     (throw (Exception. "Function definition should be of the form (fn* (args) (body))"))))
 
-(defn- malif [test then else env]
+(defn- malif [[test then else] env]
   (let [body (if (eval-expr test env) then else)]
     (eval-expr body env)))
 
@@ -42,12 +42,12 @@
   (cond
     (not (vector? expr)) (eval-node expr env)
     (empty? expr) expr
-    :else (let [[fn-name arg1 arg2 arg3] expr]
+    :else (let [[fn-name & args] expr]
             (case fn-name
-              "def!" (maldef! arg1 arg2 env)
-              "let*" (mallet* arg1 arg2 env)
-              "fn*"  (malfn* arg1 arg2 env)
-              "if"   (malif arg1 arg2 arg3 env)
-              "do"   (maldo arg1 env)
+              "def!" (maldef! args env)
+              "let*" (mallet* args env)
+              "fn*"  (malfn* args env)
+              "if"   (malif args env)
+              "do"   (maldo args env)
               (let [[f & args] (eval-node expr env)]
                 (apply f args))))))
