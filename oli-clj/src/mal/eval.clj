@@ -19,7 +19,7 @@
   (let [bindings (apply hash-map bindings)
         new-env (mal.env/create-env env)]
     (doseq [[k v] bindings]
-      (mal.env/set-in-env new-env k (eval-node v new-env)))
+      (mal.env/set-in-env new-env k (eval-expr v new-env)))
     (eval-expr expr new-env)))
 
 (defn- eval-expr [expr env]

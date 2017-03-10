@@ -8,7 +8,7 @@
   v)
 
 (defn get-from-env [env k]
-  (get-in @env ["env" k]))
+  (get-in @env [:env k]))
 
 (defn find-env-for [env k]
   (if (contains? (:env @env) k)
