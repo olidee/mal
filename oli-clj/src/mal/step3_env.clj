@@ -2,15 +2,12 @@
   (:require [mal.reader :as reader]
             [mal.eval :as eval]
             [mal.env :as env]
+            [mal.core :as core]
             [mal.printer :as printer]
             [mal.util :as util]))
 
 (def repl-env (env/create-env nil))
-(doseq [[k v] {"+" (fn [x y] (+ x y))
-               "-" (fn [x y] (- x y))
-               "*" (fn [x y] (* x y))
-               "/" (fn [x y] (/ x y))}]
-  (env/set-in-env repl-env k v))
+(doseq [[k v] core/ns] (env/set-in-env repl-env k v))
 
 (defn READ [str]
   (reader/read-expr str))

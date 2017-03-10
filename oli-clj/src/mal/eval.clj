@@ -8,19 +8,23 @@
 
 (defn- eval-node [n env]
   (cond
-    (string? n) (mal.env/get-from-env env n)
-    (vector? n) (map #(eval-expr % env) n)
+    (string? n) (case n
+                  ("nil" "true" "false") (read-string n)
+                  (mal.env/get-from-env env n))
+    (sequential? n) (map #(eval-expr % env) n)
     :else n))
 
 (defn- maldef! [[name value] env]
   (mal.env/set-in-env env name (eval-expr value env)))
 
 (defn- mallet* [[bindings expr] env]
-  (let [bindings (apply hash-map bindings)
-        new-env (mal.env/create-env env)]
-    (doseq [[k v] bindings]
-      (mal.env/set-in-env new-env k (eval-expr v new-env)))
-    (eval-expr expr new-env)))
+  (if (and (vector? bindings) (even? (count bindings)))
+    (let [bindings (apply hash-map bindings)
+          new-env (mal.env/create-env env)]
+      (doseq [[k v] bindings]
+        (mal.env/set-in-env new-env k (eval-expr v new-env)))
+      (eval-expr expr new-env))
+    (throw (Exception. "Let expression should be of the form (let* [binding expr] (body))"))))
 
 (defn- malfn* [[params body] env]
   (if (vector? params)
@@ -29,7 +33,7 @@
         (let [fn-env (mal.env/create-env env params args)]
           (eval-expr body fn-env))
         (throw (Exception. "Wrong number of args passed to fn"))))
-    (throw (Exception. "Function definition should be of the form (fn* (args) (body))"))))
+    (throw (Exception. "Function definition should be of the form (fn* [args] (body))"))))
 
 (defn- malif [[test then else] env]
   (let [body (if (eval-expr test env) then else)]
@@ -40,7 +44,7 @@
 
 (defn- eval-expr [expr env]
   (cond
-    (not (vector? expr)) (eval-node expr env)
+    (not (seq? expr)) (eval-node expr env)
     (empty? expr) expr
     :else (let [[fn-name & args] expr]
             (case fn-name
